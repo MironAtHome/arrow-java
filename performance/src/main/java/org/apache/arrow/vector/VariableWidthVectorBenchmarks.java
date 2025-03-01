@@ -23,8 +23,10 @@ import org.apache.arrow.memory.RootAllocator;
 import org.apache.arrow.vector.holders.NullableVarCharHolder;
 import org.openjdk.jmh.annotations.Benchmark;
 import org.openjdk.jmh.annotations.BenchmarkMode;
+import org.openjdk.jmh.annotations.Level;
 import org.openjdk.jmh.annotations.Mode;
 import org.openjdk.jmh.annotations.OutputTimeUnit;
+import org.openjdk.jmh.annotations.Param;
 import org.openjdk.jmh.annotations.Scope;
 import org.openjdk.jmh.annotations.Setup;
 import org.openjdk.jmh.annotations.State;
@@ -45,15 +47,18 @@ public class VariableWidthVectorBenchmarks {
 
   private static final int ALLOCATOR_CAPACITY = 1024 * 1024;
 
-  private static byte[] bytes = VariableWidthVectorBenchmarks.class.getName().getBytes();
+  private static byte[] bytes = VariableWidthVectorBenchmarkConstants.LONG_VALUE.getBytes();
   private ArrowBuf arrowBuff;
 
   private BufferAllocator allocator;
 
   private VarCharVector vector;
 
+  @Param({"1", "2", "10", "40"})
+  private int step;
+
   /** Setup benchmarks. */
-  @Setup
+  @Setup(Level.Iteration)
   public void prepare() {
     allocator = new RootAllocator(ALLOCATOR_CAPACITY);
     vector = new VarCharVector("vector", allocator);
@@ -63,7 +68,7 @@ public class VariableWidthVectorBenchmarks {
   }
 
   /** Tear down benchmarks. */
-  @TearDown
+  @TearDown(Level.Iteration)
   public void tearDown() {
     arrowBuff.close();
     vector.close();
@@ -87,7 +92,7 @@ public class VariableWidthVectorBenchmarks {
   @OutputTimeUnit(TimeUnit.MILLISECONDS)
   public int setSafeFromArray() {
     for (int i = 0; i < 500; ++i) {
-      vector.setSafe(i * 40, bytes);
+      vector.setSafe(i * step, bytes);
     }
     return vector.getBufferSize();
   }

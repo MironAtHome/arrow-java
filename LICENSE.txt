@@ -202,16 +202,21 @@
    limitations under the License.
 
 --------------------------------------------------------------------------------
-vector/src/main/java/org/apache/arrow/vector/util/IntObjectHashMap.java
-vector/src/main/java/org/apache/arrow/vector/util/IntObjectMap.java
+This product includes code from Netty 4.1.117.Final:
 
-These file are derived from code from Netty, which is made available under the
-Apache License 2.0.
+* vector/src/main/java/org/apache/arrow/vector/util/IntObjectHashMap.java
+* vector/src/main/java/org/apache/arrow/vector/util/IntObjectMap.java
+* memory/memory-core/src/main/java/org/apache/arrow/memory/rounding/DefaultRoundingPolicy.java
+
+Copyright: 2014 The Netty Project
+Home page: https://netty.io/
+License: https://www.apache.org/licenses/LICENSE-2.0
 
 --------------------------------------------------------------------------------
-memory/memory-core/src/main/java/org/apache/arrow/util/Preconditions.java
+This product includes code from Google Guava 33.4.0-jre
 
-This product includes software from Google Guava, which is made available under the
-Apache License 2.0.
-  * Copyright (C) 2007 The Guava Authors
-  * https://github.com/google/guava
+* memory/memory-core/src/main/java/org/apache/arrow/util/Preconditions.java
+
+Copyright: (C) 2011 The Guava Authors
+Home page: https://github.com/google/guava/
+License: https://www.apache.org/licenses/LICENSE-2.0

@@ -71,7 +71,7 @@ jobs:
         run: |
           dev/release/run_rat.sh "${TAR_GZ}"
       - name: Upload source archive
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: release-source
           path: |
@@ -107,9 +107,22 @@ jobs:
       - name: Extract source archive
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      - name: Download the latest Apache Arrow C++
-        run: |
-          ci/scripts/download_cpp.sh
+      # We always use the main branch for apache/arrow for now.
+      # Because we want to use
+      # https://github.com/apache/arrow/pull/45114 in
+      # apache/arrow-java. We can revert this workaround once Apache
+      # Arrow 20.0.0 that includes the change released.
+      #
+      # - name: Download the latest Apache Arrow C++
+      #   if: github.event_name != 'schedule'
+      #   run: |
+      #     ci/scripts/download_cpp.sh
+      - name: Checkout Apache Arrow C++
+        # if: github.event_name == 'schedule'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow
+          path: arrow
       - name: Checkout apache/arrow-testing
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -141,7 +154,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-linux-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: jni-linux-${{ matrix.platform.arch }}
           path: jni-linux-${{ matrix.platform.arch }}.tar.gz
@@ -167,9 +180,16 @@ jobs:
       - name: Extract source archive
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
-      - name: Download the latest Apache Arrow C++
-        run: |
-          ci/scripts/download_cpp.sh
+      # - name: Download the latest Apache Arrow C++
+      #   if: github.event_name != 'schedule'
+      #   run: |
+      #     ci/scripts/download_cpp.sh
+      - name: Checkout Apache Arrow C++
+        # if: github.event_name == 'schedule'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow
+          path: arrow
       - name: Checkout apache/arrow-testing
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -260,7 +280,7 @@ jobs:
       - name: Compress into single artifact to keep directory structure
         run: tar -cvzf jni-macos-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: jni-macos-${{ matrix.platform.arch }}
           path: jni-macos-${{ matrix.platform.arch }}.tar.gz
@@ -286,9 +306,16 @@ jobs:
         run: |
           tar -xf apache-arrow-java-*.tar.gz --strip-components=1
       - name: Download the latest Apache Arrow C++
+        if: github.event_name != 'schedule'
         shell: bash
         run: |
           ci/scripts/download_cpp.sh
+      - name: Checkout Apache Arrow C++
+        if: github.event_name == 'schedule'
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          repository: apache/arrow
+          path: arrow
       - name: Set up Java
         uses: actions/setup-java@7a6d8a8234af8eb26422e24e3006232cccaa061b # v4.6.0
         with:
@@ -331,7 +358,7 @@ jobs:
         shell: bash
         run: tar -cvzf jni-windows-${{ matrix.platform.arch }}.tar.gz jni/
       - name: Upload artifacts
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: jni-windows-${{ matrix.platform.arch }}
           path: jni-windows-${{ matrix.platform.arch }}.tar.gz
@@ -394,17 +421,129 @@ jobs:
           path: ~/.m2
           key: binaries-build-${{ hashFiles('**/*.java', '**/pom.xml') }}
           restore-keys: binaries-build-
-      - name: Build bundled JAR
-        env:
-          MAVEN_ARGS: >-
-            --no-transfer-progress
+      - name: Build bundled JAR and docs
         run: |
           ci/scripts/jni_full_build.sh . jni binaries
-      - name: Upload artifacts
-        uses: actions/upload-artifact@65c4c4a1ddee5b72f698fdd19549f0f0fb45cf08 # v4.6.0
+      - name: Prepare docs
+        run: |
+          mkdir -p docs
+          cp -a target/site/apidocs reference
+          tar -cvzf reference.tar.gz reference
+      - name: Upload binaries
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
         with:
           name: release-binaries
           path: binaries/*
+      - name: Upload docs
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        with:
+          name: reference
+          path: reference.tar.gz
+  docs:
+    name: Docs
+    needs:
+      - binaries
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/setup-python@0b93645e9fea7318ecaed2b359559ac225c90a2b # v5.3.0
+        with:
+          cache: 'pip'
+      - name: Download source archive
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: release-source
+      - name: Download Javadocs
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: reference
+      - name: Extract source archive
+        run: |
+          tar -xf apache-arrow-java-*.tar.gz --strip-components=1
+      - name: Build
+        run: |
+          cd docs
+          python -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          make html
+          tar -xf ../reference.tar.gz -C build/html
+      - name: Compress into single artifact to keep directory structure
+        run: tar -cvzf html.tar.gz -C docs/build html
+      - name: Upload artifacts
+        uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
+        with:
+          name: release-html
+          path: html.tar.gz
+  publish-docs:
+    name: Publish docs
+    # Run only when:
+    # * We push to a branch
+    # * If the target repository is apache/arrow-java:
+    #   * The target branch is main
+    # * Else (fork repositories):
+    #   * All branches
+    #   * We can preview the last pushed content
+    #     at https://${YOUR_GITHUB_ACCOUNT}.github.io/arrow-java/main/
+    if: >-
+      github.event_name == 'push' &&
+        github.ref_type == 'branch' &&
+        ((github.repository == 'apache/arrow-java' && github.ref_name == 'main') ||
+         github.repository != 'apache/arrow-java')
+    needs:
+      - docs
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          path: site
+      - name: Prepare branch
+        run: |
+          if [ "${GITHUB_REPOSITORY}" = "apache/arrow-java" ]; then
+            BRANCH=asf-site
+          else
+            BRANCH=gh-pages
+          fi
+          echo "BRANCH=${BRANCH}" >> ${GITHUB_ENV}
+
+          cp site/.asf.yaml ./
+          cd site
+          git fetch
+          if ! git switch -c "${BRANCH}" "origin/${BRANCH}"; then
+            git switch --orphan "${BRANCH}"
+          fi
+          touch .nojekyll
+          cp ../.asf.yaml ./
+          git add .nojekyll .asf.yaml
+      - name: Download
+        uses: actions/download-artifact@fa0a91b85d4f404e444e00e005971372dc801d16 # v4.1.8
+        with:
+          name: release-html
+      - name: Extract
+        run: |
+          tar -xf html.tar.gz
+          rm -rf site/main
+          mv html site/main
+          git -C site add main
+          if [ "$(git status --prcelain)" == "" ]; then
+            NEED_PUSH=true
+          else
+            NEED_PUSH=false
+          fi
+          echo "NEED_PUSH=${NEED_PUSH}" >> ${GITHUB_ENV}
+      - name: Push
+        if: env.NEED_PUSH == 'true'
+        run: |
+          cd site
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git commit -m "Publish documentation (${GITHUB_SHA})"
+          git push origin "${BRANCH}"
   verify:
     name: Verify
     needs:
@@ -445,6 +584,7 @@ jobs:
     name: Upload
     if: github.ref_type == 'tag'
     needs:
+      - docs
       - verify
     runs-on: ubuntu-latest
     permissions:
@@ -464,9 +604,16 @@ jobs:
           gh release create ${GITHUB_REF_NAME} \
             --generate-notes \
             --prerelease \
-            --repo ${{ github.repository }} \
+            --repo ${GITHUB_REPOSITORY} \
             --title "Apache Arrow Java ${version} RC${rc}" \
-            --verify-tag \
-            artifacts/*/*
+            --verify-tag
+          # GitHub CLI does not respect their own rate limits
+          # https://github.com/cli/cli/issues/9586
+          for artifact in artifacts/*/*; do
+            sleep 1
+            gh release upload ${GITHUB_REF_NAME} \
+              --repo ${GITHUB_REPOSITORY} \
+              $artifact
+          done
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

@@ -30,8 +30,36 @@ existing Arrow issues in [GitHub](https://github.com/apache/arrow-java/issues).
 
 ## Did you write a patch that fixes a bug or brings an improvement?
 
-Create a GitHub issue and submit your changes as a GitHub Pull Request.
-Please make sure to [reference the issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) in your PR description.
+- Create a GitHub issue and submit your changes as a GitHub Pull Request.
+- [Reference the issue](https://docs.github.com/en/issues/tracking-your-work-with-issues/using-issues/linking-a-pull-request-to-an-issue#linking-a-pull-request-to-an-issue-using-a-keyword) in your PR description.
+- Add one or more of the labels "bug-fix", "chore", "dependencies", "documentation", and "enhancement" to your PR as appropriate.
+  - "bug-fix" is for PRs that fix a bug.
+  - "chore" is for other administrative work (build system, release process, etc.).
+  - "dependencies" is for PRs that upgrade a dependency.  (Usually only used by dependabot.)
+  - "documentation" is for documentation updates.
+  - "enhancement" is for PRs that add new features.
+- Add the "breaking-change" label to your PR if there are breaking API changes.
+- Add the PR title. The PR title will be used as the eventual commit message, so please make it descriptive but succinct.
+
+Example #1:
+
+```
+GH-12345: Document the pull request process
+
+Explain how to open a pull request and what the title, body, and labels should be.
+
+Closes #12345.
+```
+
+Example #2:
+
+```
+GH-42424: Expose Netty server builder in Flight
+
+Allow direct usage of gRPC APIs for low-level control.
+
+Closes #42424.
+```
 
 ### Minor Fixes
 
