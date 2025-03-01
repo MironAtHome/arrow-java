@@ -34,7 +34,6 @@ import org.apache.arrow.vector.ipc.message.ArrowRecordBatch;
 import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class FilterTest extends BaseEvaluatorTest {
@@ -73,7 +72,6 @@ public class FilterTest extends BaseEvaluatorTest {
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testSimpleInString() throws GandivaException, Exception {
     Field c1 = Field.nullable("c1", new ArrowType.Utf8());
     TreeNode l1 = TreeBuilder.makeLiteral(1L);
@@ -137,7 +135,6 @@ public class FilterTest extends BaseEvaluatorTest {
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testSimpleInInt() throws GandivaException, Exception {
     Field c1 = Field.nullable("c1", int32);
 
@@ -181,7 +178,6 @@ public class FilterTest extends BaseEvaluatorTest {
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testSimpleSV16() throws GandivaException, Exception {
     Field a = Field.nullable("a", int32);
     Field b = Field.nullable("b", int32);
@@ -203,7 +199,6 @@ public class FilterTest extends BaseEvaluatorTest {
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testSimpleSV16_AllMatched() throws GandivaException, Exception {
     Field a = Field.nullable("a", int32);
     Field b = Field.nullable("b", int32);
@@ -233,7 +228,6 @@ public class FilterTest extends BaseEvaluatorTest {
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testSimpleSV16_GreaterThan64Recs() throws GandivaException, Exception {
     Field a = Field.nullable("a", int32);
     Field b = Field.nullable("b", int32);
@@ -265,7 +259,6 @@ public class FilterTest extends BaseEvaluatorTest {
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testSimpleSV32() throws GandivaException, Exception {
     Field a = Field.nullable("a", int32);
     Field b = Field.nullable("b", int32);
@@ -287,7 +280,6 @@ public class FilterTest extends BaseEvaluatorTest {
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testSimpleFilterWithNoOptimisation() throws GandivaException, Exception {
     Field a = Field.nullable("a", int32);
     Field b = Field.nullable("b", int32);

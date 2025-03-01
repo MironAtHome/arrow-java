@@ -45,10 +45,11 @@ esac
 tag="v${version}"
 rc_tag="${tag}-rc${rc}"
 echo "Tagging for release: ${tag}"
-git tag -a -m "${version}" "${tag}" "${rc_tag}"
+git tag -a -m "${version}" "${tag}" "${rc_tag}^{}"
 git push origin "${tag}"
 
 release_id="apache-arrow-java-${version}"
+source_archive="apache-arrow-java-${version}.tar.gz"
 dist_url="https://dist.apache.org/repos/dist/release/arrow"
 dist_base_dir="dev/release/dist"
 dist_dir="${dist_base_dir}/${release_id}"
@@ -56,8 +57,9 @@ echo "Checking out ${dist_url}"
 rm -rf "${dist_base_dir}"
 svn co --depth=empty "${dist_url}" "${dist_base_dir}"
 gh release download "${rc_tag}" \
-  --repo "${repository}" \
   --dir "${dist_dir}" \
+  --pattern "${source_archive}*" \
+  --repo "${repository}" \
   --skip-existing
 
 echo "Uploading to release/"
@@ -87,3 +89,8 @@ echo "  https://dist.apache.org/repos/dist/release/arrow/${release_id}"
 echo
 echo "Add this release to ASF's report database:"
 echo "  https://reporter.apache.org/addrelease.html?arrow"
+echo
+echo "Release binary artifacts in repository.apache.org:"
+echo "1. Open https://repository.apache.org/#stagingRepositories"
+echo "2. Select the repository for RC: orgapachearrow-XXXX"
+echo "3. Click the Release button"
