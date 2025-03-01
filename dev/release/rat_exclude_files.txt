@@ -16,5 +16,6 @@
 # under the License.
 
 .gitmodules
+.github/pull_request_template.md
 dataset/src/test/resources/data/student.csv
 docs/Makefile

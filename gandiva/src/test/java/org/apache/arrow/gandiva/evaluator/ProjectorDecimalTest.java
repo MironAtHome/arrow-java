@@ -42,13 +42,11 @@ import org.apache.arrow.vector.types.pojo.ArrowType;
 import org.apache.arrow.vector.types.pojo.ArrowType.Decimal;
 import org.apache.arrow.vector.types.pojo.Field;
 import org.apache.arrow.vector.types.pojo.Schema;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.BaseEvaluatorTest {
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void test_add() throws GandivaException {
     int precision = 38;
     int scale = 8;
@@ -116,7 +114,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void test_add_literal() throws GandivaException {
     int precision = 2;
     int scale = 0;
@@ -178,7 +175,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void test_multiply() throws GandivaException {
     int precision = 38;
     int scale = 8;
@@ -248,7 +244,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testCompare() throws GandivaException {
     Decimal aType = new Decimal(38, 3, 128);
     Decimal bType = new Decimal(38, 2, 128);
@@ -343,7 +338,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testRound() throws GandivaException {
     Decimal aType = new Decimal(38, 2, 128);
     Decimal aWithScaleZero = new Decimal(38, 0, 128);
@@ -486,7 +480,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testCastToDecimal() throws GandivaException {
     Decimal decimalType = new Decimal(38, 2, 128);
     Decimal decimalWithScaleOne = new Decimal(38, 1, 128);
@@ -613,7 +606,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testCastToLong() throws GandivaException {
     Decimal decimalType = new Decimal(38, 2, 128);
     Field dec = Field.nullable("dec", decimalType);
@@ -666,7 +658,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testCastToDouble() throws GandivaException {
     Decimal decimalType = new Decimal(38, 2, 128);
     Field dec = Field.nullable("dec", decimalType);
@@ -721,7 +712,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testCastToString() throws GandivaException {
     Decimal decimalType = new Decimal(38, 2, 128);
     Field dec = Field.nullable("dec", decimalType);
@@ -783,7 +773,6 @@ public class ProjectorDecimalTest extends org.apache.arrow.gandiva.evaluator.Bas
   }
 
   @Test
-  @Disabled("GH-43576 - Fix and enable this test")
   public void testCastStringToDecimal() throws GandivaException {
     Decimal decimalType = new Decimal(4, 2, 128);
     Field dec = Field.nullable("dec", decimalType);
